@@ -12,11 +12,10 @@ import {
   Pressable
 } from "react-native";
 import { Link, useRouter } from 'expo-router';
-import { MaterialIcons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
+import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 import * as Font from "expo-font";
 import { Easing } from "react-native";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+
 const { width } = Dimensions.get("window");
 
 const loadFonts = async () => {
@@ -30,6 +29,7 @@ type Slide = {
   title: string;
   description: string;
   price: string;
+  rating: number;
 };
 
 type PaginationProps = {
@@ -74,10 +74,11 @@ const Pagination = ({ data, scrollX }: PaginationProps) => {
 };
 
 type SlideItemProps = {
-  item: Slide;
+  item1: Slide;
+  item2?: Slide;
 };
 
-const SlideItem = ({ item }: SlideItemProps) => {
+const SlideItem = ({ item1, item2 }: SlideItemProps) => {
   const translateYImage = useRef(new Animated.Value(40)).current;
 
   useEffect(() => {
@@ -89,28 +90,68 @@ const SlideItem = ({ item }: SlideItemProps) => {
     }).start();
   }, []);
 
+  const renderRating = (rating: number) => {
+    const fullStars = Math.floor(rating);
+    const halfStar = rating % 1 !== 0;
+    const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+    return (
+      <View style={styles.ratingContainer}>
+        {[...Array(fullStars)].map((_, i) => (
+          <MaterialIcons key={`full-${i}`} name="star" size={16} color="#FFD700" />
+        ))}
+        {halfStar && <MaterialIcons name="star-half" size={16} color="#FFD700" />}
+        {[...Array(emptyStars)].map((_, i) => (
+          <MaterialIcons key={`empty-${i}`} name="star-border" size={16} color="#FFD700" />
+        ))}
+      </View>
+    );
+  };
+
   return (
     <View style={styles.slideItemContainer}>
-      <Animated.Image
-        source={item.img}
-        resizeMode="contain"
-        style={[
-          styles.image,
-          {
-            transform: [{ translateY: translateYImage }],
-          },
-        ]}
-      />
-      <View style={styles.content}>
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.description}>{item.description}</Text>
-        <Text style={styles.price}>{item.price}</Text>
+      <View style={styles.imageContainer}>
+        <Animated.Image
+          source={item1.img}
+          resizeMode="contain"
+          style={[
+            styles.image,
+            {
+              transform: [{ translateY: translateYImage }],
+            },
+          ]}
+        />
+        <View style={styles.content}>
+          <Text style={styles.title}>{item1.title}</Text>
+          <Text style={styles.description}>{item1.description}</Text>
+          <Text style={styles.price}>{item1.price}</Text>
+          {renderRating(item1.rating)}
+        </View>
       </View>
+      {item2 && (
+        <View style={styles.imageContainer}>
+          <Animated.Image
+            source={item2.img}
+            resizeMode="contain"
+            style={[
+              styles.image,
+              {
+                transform: [{ translateY: translateYImage }],
+              },
+            ]}
+          />
+          <View style={styles.content}>
+            <Text style={styles.title}>{item2.title}</Text>
+            <Text style={styles.description}>{item2.description}</Text>
+            <Text style={styles.price}>{item2.price}</Text>
+            {renderRating(item2.rating)}
+          </View>
+        </View>
+      )}
     </View>
   );
 };
 
-const Index = () => {
+const Shop = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [index, setIndex] = useState(0);
   const scrollX = useRef(new Animated.Value(0)).current;
@@ -155,41 +196,66 @@ const Index = () => {
   const slides: Slide[] = [
     {
       img: require("@/assets/images/student.jpg"),
-      title: "Title 1",
-      description: "Description 1",
-      price: "$10",
+      title: "Touchable screen",
+      description: "Material Sales",
+      price: "$400",
+      rating: 4.5,
     },
     {
       img: require("@/assets/images/student.jpg"),
-      title: "Title 2",
-      description: "Description 2",
-      price: "$20",
+      title: "Touchable screen",
+      description: "Material Sales",
+      price: "$350",
+      rating: 4.0,
     },
     {
       img: require("@/assets/images/student.jpg"),
-      title: "Title 3",
-      description: "Description 3",
-      price: "$30",
+      title: "Touchable screen",
+      description: "Material Sales",
+      price: "$450",
+      rating: 4.8,
     },
     {
       img: require("@/assets/images/student.jpg"),
-      title: "Title 4",
-      description: "Description 4",
-      price: "$40",
+      title: "Touchable screen",
+      description: "Material Sales",
+      price: "$500",
+      rating: 4.9,
     },
     {
       img: require("@/assets/images/student.jpg"),
-      title: "Title 5",
-      description: "Description 5",
-      price: "$50",
+      title: "Touchable screen",
+      description: "Material Sales",
+      price: "$400",
+      rating: 4.5,
     },
     {
       img: require("@/assets/images/student.jpg"),
-      title: "Title 6",
-      description: "Description 6",
-      price: "$60",
+      title: "Touchable screen",
+      description: "Material Sales",
+      price: "$350",
+      rating: 4.0,
+    },
+    {
+      img: require("@/assets/images/student.jpg"),
+      title: "Touchable screen",
+      description: "Material Sales",
+      price: "$450",
+      rating: 4.8,
+    },
+    {
+      img: require("@/assets/images/student.jpg"),
+      title: "Touchable screen",
+      description: "Material Sales",
+      price: "$500",
+      rating: 4.9,
     },
   ];
+
+  const pairedSlides = [];
+  for (let i = 0; i < slides.length; i += 2) {
+    pairedSlides.push({ item1: slides[i], item2: slides[i + 1] });
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContainer}>
@@ -201,25 +267,17 @@ const Index = () => {
         <Text style={styles.text}>UniShop</Text>
         <Text style={styles.slogan}>Shop Slogan</Text>
         <View>
-          <Text style={styles.uniSale}>UNISHOP SALE</Text>
+          <Text style={styles.uniSale}>Work With Us</Text>
         </View>
-        <LinearGradient
-          colors={["#1BE4DA", "#4F92E6"]}
-          style={styles.textContainer}
-        >
-          <TouchableOpacity>
-            <Text style={styles.buttonText}>Check</Text>
-          </TouchableOpacity>
-        </LinearGradient>
       </View>
-      <View style={styles.newContainer}>
-        <Text style={styles.New}>New</Text>
-        <Text style={styles.neverseen}>You’ve never seen it before!</Text>
-      </View>
-      <View>
+      <View style={styles.salesContainer}>
+        <Text style={styles.salesText}>Sales</Text>
+        <View style={styles.materialsSales}>
+          <Text style={styles.materialsSalesText}>Materials Sales</Text>
+        </View>
         <FlatList
-          data={slides}
-          renderItem={({ item }) => <SlideItem item={item} />}
+          data={pairedSlides}
+          renderItem={({ item }) => <SlideItem item1={item.item1} item2={item.item2} />}
           horizontal
           pagingEnabled
           snapToAlignment="center"
@@ -231,6 +289,7 @@ const Index = () => {
         />
         <Pagination data={slides} scrollX={scrollX} />
       </View>
+
     </ScrollView>
   );
 };
@@ -238,109 +297,84 @@ const Index = () => {
 const styles = StyleSheet.create({
   scrollViewContainer: {
     flexGrow: 1,
+  },
+  container: {
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: 60,
+    paddingBottom: 20,
     backgroundColor: "black",
   },
   unicashlogo: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    width: 158,
-    height: 146,
-    resizeMode: "contain",
-  },
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "black",
-    width: "100%",
-    height: "auto",
+    width: 100,
+    height: 100,
   },
   text: {
-    fontSize: 30,
+    color: "white",
+    fontSize: 24,
     fontWeight: "bold",
-    color: "#5B7FE9",
-    fontFamily: "Rubik-Mono-One",
-    textAlign: "center",
+    marginTop: 10,
   },
   slogan: {
-    paddingTop: 10,
-    paddingBottom: 20,
+    color: "white",
+    fontSize: 16,
+    marginTop: 5,
+    textAlign: "center",
+  },
+  uniSale: {
+    paddingTop: 40,
+    paddingBottom: 0,
     color: "white",
     fontSize: 14,
     fontWeight: "bold",
     textAlign: "center",
   },
-  textContainer: {
-    paddingLeft: 50,
-    paddingRight: 50,
-    paddingTop: 10,
-    paddingBottom: 10,
-    borderRadius: 5,
-    marginBottom: 50,
-  },
-  gradientText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  uniSale: {
-    color: "white",
-    width: 190,
-    fontSize: 30,
-    fontFamily: "Rubik-Mono-One",
-    lineHeight: 40,
-    paddingBottom: 20,
-    textAlign: "center",
-  },
-  New: {
-    color: "white",
-    fontSize: 30,
-    fontFamily: "Rubik-Mono-One",
-    textAlign: "center",
-  },
-  newContainer: {
-    padding: 20,
+  salesContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: "black",
-    fontWeight: "bold",
-    color: "white",
   },
-  neverseen: {
+  salesText: {
     color: "white",
-    marginTop: 20,
+    fontSize: 20,
     fontWeight: "bold",
-    textAlign: "center",
+    paddingTop: 10,
+  },
+  materialsSales: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  materialsSalesText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
   },
   paginationContainer: {
-    position: "absolute",
-    bottom: -20,
     flexDirection: "row",
-    width: "100%",
     alignItems: "center",
     justifyContent: "center",
+    marginTop: 20,
   },
   dot: {
-    width: 12,
     height: 12,
     borderRadius: 6,
-    marginHorizontal: 3,
-    backgroundColor: "#ccc",
+    backgroundColor: "#000",
+    marginHorizontal: 8,
   },
   slideItemContainer: {
-    width: width / 3,
+    width: width,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
+  },
+  imageContainer: {
+    width: width / 2 - 20,
     alignItems: "center",
-    paddingHorizontal: 8,
   },
   image: {
     width: "100%",
-    height: width / 3
+    height: width / 2,
   },
   content: {
     alignItems: 'center',
@@ -366,23 +400,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontWeight: 'bold',
   },
-  IconsubContainer: {
-    color: "white",
-    fontSize: 30,
-  },
-  IconContainer: {
-    display: 'flex',
+  ratingContainer: {
     flexDirection: 'row',
-    padding: 20,
-    gap: 20,
     justifyContent: 'center',
-    marginTop: 20
-  },
-  iconText: {
-    color: 'white',
-    fontWeight: 'bold',
-    marginTop: 5
+    alignItems: 'center',
   }
 });
 
-export default Index;
+export default Shop;

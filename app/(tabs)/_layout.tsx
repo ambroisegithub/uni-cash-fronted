@@ -1,19 +1,19 @@
+
 import { Tabs } from 'expo-router';
 import React from 'react';
-
+import { StyleSheet } from 'react-native';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
-      }}>
+        tabBarStyle: styles.tabBar,
+        tabBarActiveTintColor: '#4F92E6',
+        tabBarInactiveTintColor: 'white',
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
@@ -24,14 +24,29 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="SignUp"
         options={{
-          title: 'Explore',
+          title: 'Profile',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+            <TabBarIcon name={focused ? 'person' : 'person-outline'} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="Shop"
+        options={{
+          title: 'Shop',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'cart' : 'cart-outline'} color={color} />
           ),
         }}
       />
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  tabBar: {
+    backgroundColor: 'black',
+  },
+});
